@@ -19,7 +19,7 @@ def_TOL_pi_rate = 1e-4
 #
 # Parameters for the solution algorithms
 #
-class OptParam :
+class FW_Param:
     # initializer 
     def __init__(self, max_itr=def_max_itr, # maximum iteration
                      TOL_Z_rate=def_TOL_Z_rate, # TOL for the change rate in the objective function
@@ -141,19 +141,22 @@ class Network :
     # 
     # Solve the User Equilibrium
     #
-    def SolveUE(self, prm=None, with_log=False):
+    def SolveUE(self, prm=None, return_log=False):
         if prm is None:
             prm = OptParam()
         # lists for log
-        Z = list() # objective function at each iteration
-        Z_rate = list() # change rate in the objective function
-        x_rate = list() # change rate in the link flow
-        pi_rate = list() # change rate in the shortest travel time
+        if return_log:
+            Zs = list() # objective function at each iteration
+            Z_rates = list() # change rate in the objective function
+            x_rates = list() # change rate in the link flow
+            pi_rates = list() # change rate in the shortest travel time
         # initialize
         t0 = self.t_mat()
         x0 = self.AoN(t0)
         pi0 = self.ShortestTravelTime(t0)
-        Z.append(self.Z(x0))
+        Z0 = self.Z(x0)
+        if return_log:
+            Zs.append(self.Z(x0))
         # main loop
         for itr in range(prm.max_itr):
             # Obtain the auxliary solution as the all-or-nothing assignment
@@ -163,19 +166,26 @@ class Network :
             # Update the tentative solution
             x = x0 + alpha*(y-x0)
             pi = self.ShortestTravelTime(self.t_mat(x))
-            # Calculate change rates and update logs
-            Z.append(self.Z(x))
-            Z_rate.append((-Z[-1]+Z[-2])/Z[-2])
-            pi_rate.append(sum(abs(pi[pi0>0]-pi0[pi0>0])/pi0[pi0>0]))
-            x_rate.append(np.sqrt(np.sum((x0-x)**2))/(np.sum(x0)))
+            Z = self.Z(x)
+            # Calculate change rates 
+            Z_rate = (Z0-Z)/Z0
+            x_rate = np.sqrt(np.sum((x0-x)**2))/(np.sum(x0))
+            pi_rate = sum(abs(pi[pi0>0]-pi0[pi0>0])/pi0[pi0>0])
+            # Update logs
+            if return_log:
+                Zs.append(Z)
+                Z_rates.append(Z_rate)
+                x_rates.append(x_rate)
+                pi_rates.append(pi_rate)
             # Convergence check
-            if Z_rate[-1] < prm.TOL_Z_rate or x_rate[-1] < prm.TOL_x_rate or pi_rate[-1] < prm.TOL_pi_rate:
+            if Z_rate < prm.TOL_Z_rate or x_rate < prm.TOL_x_rate or pi_rate < prm.TOL_pi_rate:
                 break
             # Memorize the current solution
             x0 = x.copy()
             pi0 = pi.copy()
-        if with_log:
-            return x, (Z, Z_rate, pi_rate, x_rate)
+            Z0 = Z
+        if return_log:
+            return x, (Zs, Z_rates, x_rates, pi_rates)
         else:
             return x
             
@@ -231,13 +241,10 @@ def read_net(fname):
 #
 if __name__ == '__main__':
     t0 = time.time()
-    nname = 'Austin'
-    net_fname = '%s/%s_%s' % (nname, nname, net_suffix)
-    net = read_net(net_fname)
+    root = 'data'
+    dir_name = 'SiouxFalls'
+    ntw = TNTP.Network(root, dir_name)
+    x = ntw.SolveUE()
     t1 = time.time()
-    # trips_fname = '%s/%s_%s' % (nname, nname, trip_suffix)
-    # trips = read_trips(trips_fname)
     print("t1-t0:", t1-t0)
-    # if trips:
-    #     print(trips)
     
