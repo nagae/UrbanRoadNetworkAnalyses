@@ -143,7 +143,7 @@ class Network :
     #
     def SolveUE(self, prm=None, return_log=False):
         if prm is None:
-            prm = OptParam()
+            prm = FW_Param()
         # lists for log
         if return_log:
             Zs = list() # objective function at each iteration
