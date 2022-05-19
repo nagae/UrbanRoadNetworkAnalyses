@@ -234,7 +234,7 @@ def read_net(fname):
         # drop the redundant first/last column
         net.drop(net.columns[-1], axis='columns', inplace=True)
 
-        return net
+        return net.dropna().iloc[1:]
 
 #
 # Demo
