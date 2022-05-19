@@ -1,4 +1,4 @@
-# UrbanRoadNetworkAnalyses
-Jupyter notebook for studying urban road network analyses
+# UTN_UE.ipynb
+Google Colaboatory (compatible with Jupyter notebook) for studying urban road network analyses
 
-[利用者均衡モデルの解法](UEN_UE.ipynb)
+[UTN_UE.ipynb](UTN_UE.ipynb) ← 開いてみよう
