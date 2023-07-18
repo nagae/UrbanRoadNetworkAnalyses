@@ -4,8 +4,7 @@
 <NUMBER OF LINKS> 5
 <END OF METADATA>
 
-~	init_node	term_node	capacity	length	free_flow_time	b	power	speed	toll	link_type	;
-	1	3	1	100	0.00000001	1000000000	1	0	0	1	;
+~ 	Init node 	Term node 	Capacity 	Length 	Free Flow Time 	B	Power	Speed limit 	Toll 	Type	;	1	3	1	100	0.00000001	1000000000	1	0	0	1	;
 	1	4	1	100	50	0.02	1	0	0	1	;
 	3	2	1	100	50	0.02	1	0	0	1	;
 	3	4	1	100	10	0.1	1	0	0	1	;
