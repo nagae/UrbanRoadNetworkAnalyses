@@ -73,7 +73,8 @@ class Network :
             return self.fftt
         return self.fftt*(1 + self.b*(x/self.capacity)**self.power)
     def t_mat(self, x=None):
-        return sparse.csr_matrix((self.t(x), zip(*self.links)))
+        row_ind, col_ind = zip(*self.links)
+        return sparse.csr_matrix((self.t(x), (row_ind, col_ind)))
     
     #
     # Integral of the link performance function and the objective function of the equivalent convex programming 
